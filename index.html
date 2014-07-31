@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="utf-8">
+
+	<title data-i18n="head.title">Status | TYPCN</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+	<link href="css/upscuits.min.css?rel=1.4.1" rel="stylesheet">
+</head>
+
+<body>
+	<div class="container">
+		<div class="jumbotron">
+			<h1><i class="icon-dashboard icon-red"></i>TYPCN Server Status</h1>	
+		</div>
+		
+		<!-- progress bar of loaded servers -->
+		<div class="progress">
+			<div class="progress-bar progress-bar-info loading bar" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+				<span class="sr-only"></span>
+			</div>
+		</div>
+
+		<!-- legenda of graphs -->
+		<div class="row">
+			<div class="col-md-8 col-md-offset-4">
+				<div class="well well-xs">
+					<div class="donut">
+						<div class="title" data-i18n="times.Last 24 hr">过去24小时</div>
+					</div>
+					<div class="donut">
+						<div class="title" data-i18n="times.Last 7 days">最近7天</div>
+					</div>
+					<div class="donut">
+						<div class="title" data-i18n="times.Last 30 days">最近30天</div>
+					</div>
+					<div class="donut">
+						<div class="title" data-i18n="times.Last year">最近1年</div>
+					</div>
+					<div class="donut">
+						<div class="title"  data-i18n="times.All time">所有时间</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="server-container">
+		
+		
+		</div>
+
+		
+		<!-- count down timer + progress bar -->
+		<div class="col-md-2">
+			<i class="icon-refresh"></i> <span id="last-update"></span>
+		</div>
+		<div class="progress">
+			<div class="progress-bar progress-bar-info countdown" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+				<span class="sr-only"></span>
+			</div>
+		</div>
+
+		<!-- modal windows-->
+	
+
+		<!-- navigation bar -->
+		
+	</div>
+	
+	<!-- mustache template for server row -->
+	<script type="template/mustache" id="server-template">
+		<div class="well {{alert}}">
+			<div class="row">
+				<div class="col-md-4">
+					<h2>
+						{{ServName}}
+						<span class="label label-status label-{{label}}"><i class="{{statusicon}}"></i></span>
+					</h2>
+	
+					<div class="btn-group">
+						PING: <span id="ping{{srid}}"> </span><br><br>
+					</div>
+					<div class="log{{id}}">
+						<ul class="list-unstyled" style="overflow-y:scroll;height:65px">
+							{{#log}}
+								<li>
+									<span class="btn btn-xs btn-{{labeltype}}"><i class="icon-{{typeicon}} icon-white"></i></span>
+									&nbsp;{{datetime}}
+								</li>
+							{{/log}}
+						</ul>
+					</div>
+				</div>
+				<div class="col-md-8 graphs"><br><br>
+					{{#charts}}
+						<div class="donut">
+							<canvas width="90" height="90" uptime="{{uptime}}"></canvas>
+							<div class="uptime">
+								{{uptime}}%
+							</div>
+						</div>
+					{{/charts}}
+				</div>
+			</div>
+		</div>
+	</script>
+	
+
+	<script src="js/vendors.min.js?rel=1.4.1" type="text/javascript"></script>
+	<script src="js/config.js?rel=1.4.1" type="text/javascript"></script>
+	<script src="js/upscuits.js?rel=1.4.1" type="text/javascript"></script>
+	<script type="text/javascript">
+		function ping(ip, callback) {
+
+    if (!this.inUse) {
+        this.status = '未检测';
+        this.inUse = true;
+        this.callback = callback;
+        this.ip = ip;
+        var _that = this;
+        this.img = new Image();
+        this.img.onload = function () {
+            _that.inUse = false;
+            _that.callback('responded');
+
+        };
+        this.img.onerror = function (e) {
+            if (_that.inUse) {
+                _that.inUse = false;
+                _that.callback(e.timeStamp - _that.start);
+            }
+
+        };
+        this.start = new Date().getTime();
+        this.img.src = "http://" + ip + "/nocache.html?id=" + start;
+        this.timer = setTimeout(function () {
+            if (_that.inUse) {
+                _that.inUse = false;
+                _that.callback('超时');
+            }
+        }, 500);
+    }
+}
+		jQuery(document).ready(myApp.dashboard.init);
+		var t1 = window.setInterval(getping,2000); 
+		function getping(){
+			ping("cdn2.eqoe.cn",function(a){ 
+				$("#ping1").html(a)
+				ping("blog.eqoe.cn",function(b){ 
+					$("#ping2").html(b)
+					ping("secure.eqoe.cn",function(c){ $("#ping3").html(c)});
+				});
+			});
+		}
+	</script>
+<div style="display:none">
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_3662891'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/stat.php%3Fid%3D3662891%26online%3D1' type='text/javascript'%3E%3C/script%3E"));</script>
+
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F2583de980a7fd235c0499e3f85f4af18' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+</div>
+</body>
+</html>
